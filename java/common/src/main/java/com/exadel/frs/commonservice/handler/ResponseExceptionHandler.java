@@ -31,6 +31,7 @@ import com.exadel.frs.commonservice.exception.MissingPathVarException;
 import com.exadel.frs.commonservice.exception.MissingRequestParamException;
 import com.exadel.frs.commonservice.exception.MissingRequestPartException;
 import com.exadel.frs.commonservice.exception.PatternMatchException;
+import javax.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.HttpHeaders;
@@ -94,7 +95,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
         log.error("Constraint violation exception occurred", e);
 
         val sb = new StringBuilder();
-        for (val violation : e.getConstraintViolations()) {
+        for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
             sb.append(violation.getMessage());
             sb.append("; ");
         }

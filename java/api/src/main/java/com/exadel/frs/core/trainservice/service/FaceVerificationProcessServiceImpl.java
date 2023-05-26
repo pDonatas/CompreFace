@@ -8,6 +8,7 @@ import com.exadel.frs.commonservice.sdk.faces.feign.dto.FindFacesResponse;
 import com.exadel.frs.commonservice.sdk.faces.feign.dto.FindFacesResult;
 import com.exadel.frs.core.trainservice.component.FaceClassifierPredictor;
 import com.exadel.frs.core.trainservice.dto.FaceMatch;
+import com.exadel.frs.core.trainservice.dto.FaceProcessResponse;
 import com.exadel.frs.core.trainservice.dto.ProcessImageParams;
 import com.exadel.frs.core.trainservice.dto.VerifyFacesResponse;
 import com.exadel.frs.core.trainservice.dto.VerifyFacesResultDto;
@@ -44,6 +45,11 @@ public class FaceVerificationProcessServiceImpl implements FaceProcessService {
         List<FindFacesResponse> facesResults = getFaceResult(processImageParams);
         VerifyFacesResponse result = getResult(facesResults.get(0), facesResults.get(1));
         return result.prepareResponse(processImageParams);
+    }
+
+    @Override
+    public FaceProcessResponse processImages(final ProcessImageParams[] processImagesParams) {
+        return null;
     }
 
     @SuppressWarnings("unchecked")

@@ -4,6 +4,7 @@ import com.exadel.frs.commonservice.exception.IncorrectPredictionCountException;
 import com.exadel.frs.commonservice.sdk.faces.feign.dto.FindFacesResponse;
 import com.exadel.frs.core.trainservice.component.FaceClassifierPredictor;
 import com.exadel.frs.core.trainservice.dto.FacePredictionResultDto;
+import com.exadel.frs.core.trainservice.dto.FaceProcessResponse;
 import com.exadel.frs.core.trainservice.dto.FaceSimilarityDto;
 import com.exadel.frs.core.trainservice.dto.FacesRecognitionResponseDto;
 import com.exadel.frs.core.trainservice.dto.ProcessImageParams;
@@ -13,6 +14,7 @@ import com.exadel.frs.core.trainservice.validation.ImageExtensionValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -68,7 +70,7 @@ public class FaceRecognizeProcessServiceImpl implements FaceProcessService {
         }
 
         String apiKey = processImageParams.getApiKey();
-        for (val findResult : facesRecognitionDto.getResult()) {
+        for (FacePredictionResultDto findResult : facesRecognitionDto.getResult()) {
             final ArrayList<FaceSimilarityDto> faces = processFaceResult(predictionCount, apiKey, findResult);
 
             findResult.setSubjects(faces);
@@ -77,11 +79,16 @@ public class FaceRecognizeProcessServiceImpl implements FaceProcessService {
         return facesRecognitionDto.prepareResponse(processImageParams);
     }
 
+    @Override
+    public FaceProcessResponse processImages(final ProcessImageParams[] processImagesParams) {
+        return null;
+    }
+
     private ArrayList<FaceSimilarityDto> processFaceResult(Integer predictionCount, String apiKey, FacePredictionResultDto findResult) {
         double[] input = Stream.of(findResult.getEmbedding()).mapToDouble(d -> d).toArray();
         val predictions = classifierPredictor.predict(apiKey, input, predictionCount);
         val faces = new ArrayList<FaceSimilarityDto>();
-        for (val prediction : predictions) {
+        for (Pair<Double, String> prediction : predictions) {
             var pred = BigDecimal.valueOf(prediction.getLeft());
             pred = pred.setScale(5, HALF_UP);
             faces.add(new FaceSimilarityDto(prediction.getRight(), pred.floatValue()));

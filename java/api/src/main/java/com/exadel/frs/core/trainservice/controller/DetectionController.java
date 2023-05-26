@@ -25,6 +25,7 @@ import static com.exadel.frs.core.trainservice.system.global.Constants.IMAGE_FIL
 import static com.exadel.frs.core.trainservice.system.global.Constants.LIMIT_DEFAULT_VALUE;
 import static com.exadel.frs.core.trainservice.system.global.Constants.LIMIT_DESC;
 import static com.exadel.frs.core.trainservice.system.global.Constants.LIMIT_MIN_DESC;
+import static com.exadel.frs.core.trainservice.system.global.Constants.MULTIPLE_IMAGE_FILE_DESC;
 import static com.exadel.frs.core.trainservice.system.global.Constants.NUMBER_VALUE_EXAMPLE;
 import static com.exadel.frs.core.trainservice.system.global.Constants.STATUS;
 import static com.exadel.frs.core.trainservice.system.global.Constants.STATUS_DEFAULT_VALUE;
@@ -32,6 +33,8 @@ import static com.exadel.frs.core.trainservice.system.global.Constants.STATUS_DE
 import static com.exadel.frs.core.trainservice.system.global.Constants.X_FRS_API_KEY_HEADER;
 import com.exadel.frs.core.trainservice.dto.Base64File;
 import com.exadel.frs.core.trainservice.dto.FacesDetectionResponseDto;
+import com.exadel.frs.core.trainservice.dto.HashMapResponseDto;
+import com.exadel.frs.core.trainservice.dto.MultipleFacesDetectionResponseDto;
 import com.exadel.frs.core.trainservice.dto.ProcessImageParams;
 import com.exadel.frs.core.trainservice.service.FaceProcessService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -56,6 +59,51 @@ import org.springframework.web.multipart.MultipartFile;
 public class DetectionController {
 
     private final FaceProcessService detectionService;
+
+    @PostMapping(value = "/detection/detect/multiple", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiImplicitParams({
+            @ApiImplicitParam(
+                    name = X_FRS_API_KEY_HEADER,
+                    dataTypeClass = String.class,
+                    paramType = "header",
+                    value = "Api key of application and model",
+                    required = true)
+    })
+    public HashMapResponseDto detectMultiple(
+            @ApiParam(value = MULTIPLE_IMAGE_FILE_DESC, required = true)
+            @RequestParam
+            final MultipartFile[] files,
+            @ApiParam(value = LIMIT_DESC, example = NUMBER_VALUE_EXAMPLE)
+            @RequestParam(defaultValue = LIMIT_DEFAULT_VALUE, required = false)
+            @Min(value = 0, message = LIMIT_MIN_DESC)
+            final Integer limit,
+            @ApiParam(value = DET_PROB_THRESHOLD_DESC, example = NUMBER_VALUE_EXAMPLE)
+            @RequestParam(value = DET_PROB_THRESHOLD, required = false)
+            final Double detProbThreshold,
+            @ApiParam(value = FACE_PLUGINS_DESC)
+            @RequestParam(value = FACE_PLUGINS, required = false, defaultValue = "")
+            final String facePlugins,
+            @ApiParam(value = STATUS_DESC)
+            @RequestParam(value = STATUS, required = false, defaultValue = STATUS_DEFAULT_VALUE)
+            final Boolean status
+    ) {
+        var processableImages = new ProcessImageParams[files.length];
+        var i = 0;
+        for (var file : files) {
+            var processImageParams = ProcessImageParams
+                    .builder()
+                    .file(file)
+                    .limit(limit)
+                    .detProbThreshold(detProbThreshold)
+                    .facePlugins(facePlugins)
+                    .status(status)
+                    .build();
+
+            processableImages[i++] = processImageParams;
+        }
+
+        return (HashMapResponseDto) detectionService.processImages(processableImages);
+    }
 
     @PostMapping(value = "/detection/detect", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiImplicitParams({

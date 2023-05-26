@@ -34,6 +34,7 @@ public class Constants {
     public static final String PREDICTION_COUNT_REQUEST_PARAM = "prediction_count";
     public static final String API_KEY_DESC = "Api key of application and model";
     public static final String IMAGE_FILE_DESC = "Image for recognizing";
+    public static final String MULTIPLE_IMAGE_FILE_DESC = "Multiple images for recognizing";
     public static final String LIMIT_DESC = "Maximum number of faces to be recognized";
     public static final String LIMIT_MIN_DESC = "Limit should be equal or greater than 0";
     public static final String PREDICTION_COUNT_DESC = "Maximum number of predictions per faces";
