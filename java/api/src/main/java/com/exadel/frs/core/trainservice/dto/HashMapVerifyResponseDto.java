@@ -32,14 +32,14 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(NON_NULL)
 public class HashMapVerifyResponseDto extends FaceProcessResponse {
-    private List<HashMap<String, List<MultipleFindFacesResponse>>> result;
+    private List<HashMap<String, MultipleFindFacesResponse>> result;
 
     @Override
     public HashMapVerifyResponseDto prepareResponse(ProcessImageParams processImageParams) {
         return this;
     }
 
-    public void addResult(final HashMap<String, List<MultipleFindFacesResponse>> resultObject) {
+    public void addResult(final HashMap<String, MultipleFindFacesResponse> resultObject) {
         if (this.result == null) {
             this.result = new ArrayList<>();
         }

@@ -33,7 +33,7 @@ public class VerifyController {
     private final EmbeddingsProcessService verificationService;
 
     @PostMapping(value = "/verification/verify/multiple", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public MultipleFacesDetectionResponseDto verifyMultiple(
+    public HashMapVerifyResponseDto verifyMultiple(
             @ApiParam(value = API_KEY_DESC, required = true)
             @RequestHeader(X_FRS_API_KEY_HEADER)
             final String apiKey,
@@ -41,7 +41,7 @@ public class VerifyController {
             @RequestParam(name = SOURCE_IMAGE)
             final MultipartFile sourceImage,
             @ApiParam(value = TARGET_IMAGE_DESC, required = true)
-            @RequestParam(name = TARGET_IMAGE)
+            @RequestParam(name = TARGET_IMAGES)
             final MultipartFile[] targetImages,
             @ApiParam(value = LIMIT_DESC, example = NUMBER_VALUE_EXAMPLE)
             @RequestParam(defaultValue = LIMIT_DEFAULT_VALUE, required = false)
@@ -78,7 +78,7 @@ public class VerifyController {
             processableImages[i++] = processImageParams;
         }
 
-        return (MultipleFacesDetectionResponseDto) verificationService.processImages(processableImages);
+        return (HashMapVerifyResponseDto) verificationService.processImages(processableImages);
     }
 
     @PostMapping(value = "/verification/verify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

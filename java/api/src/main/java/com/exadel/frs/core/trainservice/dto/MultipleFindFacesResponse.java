@@ -67,8 +67,8 @@ public class MultipleFindFacesResponse extends FaceProcessResponse {
         HashMapVerifyResponseDto result = new HashMapVerifyResponseDto();
 
         for (var response : responses) {
-            var resultObject = new HashMap<String, List<MultipleFindFacesResponse>>();
-            resultObject.put(response.getFileName(), List.of(response));
+            var resultObject = new HashMap<String, MultipleFindFacesResponse>();
+            resultObject.put(response.getFileName(), response);
             result.addResult(resultObject);
         }
 

@@ -11,6 +11,7 @@ import com.exadel.frs.core.trainservice.component.FaceClassifierPredictor;
 import com.exadel.frs.core.trainservice.dto.*;
 import com.exadel.frs.core.trainservice.mapper.FacesMapper;
 import com.exadel.frs.core.trainservice.validation.ImageExtensionValidator;
+import java.io.File;
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -22,6 +23,7 @@ import java.util.function.Function;
 
 import static com.exadel.frs.core.trainservice.system.global.Constants.SOURCE_IMAGE;
 import static com.exadel.frs.core.trainservice.system.global.Constants.TARGET_IMAGE;
+import static com.exadel.frs.core.trainservice.system.global.Constants.TARGET_IMAGES;
 import static java.math.RoundingMode.HALF_UP;
 
 @RequiredArgsConstructor
@@ -48,14 +50,15 @@ public class FaceVerificationProcessServiceImpl implements FaceProcessService {
         for (ProcessImageParams processImageParams : processImagesParams) {
             MultipleFindFacesResponse response = MultipleFindFacesResponse.builder()
                     .build();
-            MultipartFile file = (MultipartFile) processImageParams.getFile();
-            response.setFileName(file.getOriginalFilename());
+            System.out.println("file: " + processImageParams.getFile());
+            Map<String, MultipartFile> fileMap = (Map<String, MultipartFile>) processImageParams.getFile();
+            MultipartFile sourceImage = fileMap.get(TARGET_IMAGE);
+            response.setFileName(sourceImage.getOriginalFilename());
             try {
                 response.setResult(processImage(processImageParams).getFaceMatches());
             } catch (BasicException e) {
                 response.setResult(null);
             }
-
             responses[i] = response;
             i++;
         }
