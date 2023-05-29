@@ -1,5 +1,6 @@
 package com.exadel.frs.core.trainservice.service;
 
+import com.exadel.frs.commonservice.exception.BasicException;
 import com.exadel.frs.commonservice.exception.TooManyFacesException;
 import com.exadel.frs.commonservice.sdk.faces.FacesApiClient;
 import com.exadel.frs.commonservice.sdk.faces.exception.NoFacesFoundException;
@@ -7,11 +8,7 @@ import com.exadel.frs.commonservice.sdk.faces.feign.dto.FacesBox;
 import com.exadel.frs.commonservice.sdk.faces.feign.dto.FindFacesResponse;
 import com.exadel.frs.commonservice.sdk.faces.feign.dto.FindFacesResult;
 import com.exadel.frs.core.trainservice.component.FaceClassifierPredictor;
-import com.exadel.frs.core.trainservice.dto.FaceMatch;
-import com.exadel.frs.core.trainservice.dto.FaceProcessResponse;
-import com.exadel.frs.core.trainservice.dto.ProcessImageParams;
-import com.exadel.frs.core.trainservice.dto.VerifyFacesResponse;
-import com.exadel.frs.core.trainservice.dto.VerifyFacesResultDto;
+import com.exadel.frs.core.trainservice.dto.*;
 import com.exadel.frs.core.trainservice.mapper.FacesMapper;
 import com.exadel.frs.core.trainservice.validation.ImageExtensionValidator;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +17,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import static com.exadel.frs.core.trainservice.system.global.Constants.SOURCE_IMAGE;
@@ -49,7 +43,24 @@ public class FaceVerificationProcessServiceImpl implements FaceProcessService {
 
     @Override
     public FaceProcessResponse processImages(final ProcessImageParams[] processImagesParams) {
-        return null;
+        var responses = new MultipleFindFacesResponse[processImagesParams.length];
+        int i = 0;
+        for (ProcessImageParams processImageParams : processImagesParams) {
+            MultipleFindFacesResponse response = MultipleFindFacesResponse.builder()
+                    .build();
+            MultipartFile file = (MultipartFile) processImageParams.getFile();
+            response.setFileName(file.getOriginalFilename());
+            try {
+                response.setResult(processImage(processImageParams).getFaceMatches());
+            } catch (BasicException e) {
+                response.setResult(null);
+            }
+
+            responses[i] = response;
+            i++;
+        }
+
+        return MultipleFindFacesResponse.buildResponse(responses);
     }
 
     @SuppressWarnings("unchecked")

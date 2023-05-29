@@ -15,18 +15,17 @@
  */
 package com.exadel.frs.core.trainservice.dto;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import com.exadel.frs.commonservice.dto.FindFacesResultDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Data
 @Builder
@@ -34,21 +33,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(NON_NULL)
-public class MultipleFacesDetectionResponseDto extends FaceProcessResponse {
+public class MultipleFindFacesResponse extends FaceProcessResponse {
 
     @JsonProperty(value = "plugins_versions")
     private PluginsVersionsDto pluginsVersions;
-    private List<FindFacesResultDto> result;
+    private List<FaceMatch> result;
     private String fileName;
 
     @Override
-    public MultipleFacesDetectionResponseDto prepareResponse(ProcessImageParams processImageParams) {
-        if (this.getResult()==null || this.getResult().isEmpty()){
-            return this;
-        }
-
+    public MultipleFindFacesResponse prepareResponse(ProcessImageParams processImageParams) {
         if (this.getFileName() == null) {
             this.setFileName(processImageParams.getFile().toString());
+        }
+
+        if (this.getResult()==null || this.getResult().isEmpty()){
+            return this;
         }
 
         String facePlugins = processImageParams.getFacePlugins();
@@ -64,12 +63,12 @@ public class MultipleFacesDetectionResponseDto extends FaceProcessResponse {
         return this;
     }
 
-    public static HashMapDetectionResponseDto buildResponse(final MultipleFacesDetectionResponseDto[] responses) {
-        var result = new HashMapDetectionResponseDto();
+    public static HashMapVerifyResponseDto  buildResponse(final MultipleFindFacesResponse[] responses) {
+        HashMapVerifyResponseDto result = new HashMapVerifyResponseDto();
 
         for (var response : responses) {
-            var resultObject = new HashMap<String, List<FindFacesResultDto>>();
-            resultObject.put(response.getFileName(), response.getResult());
+            var resultObject = new HashMap<String, List<MultipleFindFacesResponse>>();
+            resultObject.put(response.getFileName(), List.of(response));
             result.addResult(resultObject);
         }
 

@@ -30,6 +30,7 @@ public class Constants {
     public static final String RECOGNIZE = "/recognition/recognize";
     public static final String SOURCE_IMAGE = "source_image";
     public static final String TARGET_IMAGE = "target_image";
+    public static final String TARGET_IMAGES = "target_images";
     public static final String FACE_PLUGINS = "face_plugins";
     public static final String PREDICTION_COUNT_REQUEST_PARAM = "prediction_count";
     public static final String API_KEY_DESC = "Api key of application and model";

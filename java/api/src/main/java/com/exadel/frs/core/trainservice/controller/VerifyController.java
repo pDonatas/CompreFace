@@ -2,31 +2,10 @@ package com.exadel.frs.core.trainservice.controller;
 
 import static com.exadel.frs.commonservice.system.global.Constants.DET_PROB_THRESHOLD;
 import static com.exadel.frs.core.trainservice.service.FaceVerificationProcessServiceImpl.RESULT;
-import static com.exadel.frs.core.trainservice.system.global.Constants.API_KEY_DESC;
-import static com.exadel.frs.core.trainservice.system.global.Constants.API_V1;
-import static com.exadel.frs.core.trainservice.system.global.Constants.DET_PROB_THRESHOLD_DESC;
-import static com.exadel.frs.core.trainservice.system.global.Constants.FACE_PLUGINS;
-import static com.exadel.frs.core.trainservice.system.global.Constants.FACE_PLUGINS_DESC;
-import static com.exadel.frs.core.trainservice.system.global.Constants.LIMIT_DEFAULT_VALUE;
-import static com.exadel.frs.core.trainservice.system.global.Constants.LIMIT_DESC;
-import static com.exadel.frs.core.trainservice.system.global.Constants.LIMIT_MIN_DESC;
-import static com.exadel.frs.core.trainservice.system.global.Constants.NUMBER_VALUE_EXAMPLE;
-import static com.exadel.frs.core.trainservice.system.global.Constants.SOURCE_IMAGE;
-import static com.exadel.frs.core.trainservice.system.global.Constants.SOURCE_IMAGE_DESC;
-import static com.exadel.frs.core.trainservice.system.global.Constants.STATUS;
-import static com.exadel.frs.core.trainservice.system.global.Constants.STATUS_DEFAULT_VALUE;
-import static com.exadel.frs.core.trainservice.system.global.Constants.STATUS_DESC;
-import static com.exadel.frs.core.trainservice.system.global.Constants.TARGET_IMAGE;
-import static com.exadel.frs.core.trainservice.system.global.Constants.TARGET_IMAGE_DESC;
-import static com.exadel.frs.core.trainservice.system.global.Constants.X_FRS_API_KEY_HEADER;
-import com.exadel.frs.core.trainservice.dto.EmbeddingsVerificationProcessResponse;
-import com.exadel.frs.core.trainservice.dto.EmbeddingsVerificationRequest;
-import com.exadel.frs.core.trainservice.dto.ProcessEmbeddingsParams;
-import com.exadel.frs.core.trainservice.dto.ProcessImageParams;
-import com.exadel.frs.core.trainservice.dto.VerifyFacesResponse;
-import com.exadel.frs.core.trainservice.dto.VerifySourceTargetRequest;
+import static com.exadel.frs.core.trainservice.system.global.Constants.*;
+
+import com.exadel.frs.core.trainservice.dto.*;
 import com.exadel.frs.core.trainservice.service.EmbeddingsProcessService;
-import com.exadel.frs.core.trainservice.service.FaceProcessService;
 import io.swagger.annotations.ApiParam;
 import java.util.Collections;
 import java.util.List;
@@ -52,6 +31,55 @@ import org.springframework.web.multipart.MultipartFile;
 public class VerifyController {
 
     private final EmbeddingsProcessService verificationService;
+
+    @PostMapping(value = "/verification/verify/multiple", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public MultipleFacesDetectionResponseDto verifyMultiple(
+            @ApiParam(value = API_KEY_DESC, required = true)
+            @RequestHeader(X_FRS_API_KEY_HEADER)
+            final String apiKey,
+            @ApiParam(value = SOURCE_IMAGE_DESC, required = true)
+            @RequestParam(name = SOURCE_IMAGE)
+            final MultipartFile sourceImage,
+            @ApiParam(value = TARGET_IMAGE_DESC, required = true)
+            @RequestParam(name = TARGET_IMAGE)
+            final MultipartFile[] targetImages,
+            @ApiParam(value = LIMIT_DESC, example = NUMBER_VALUE_EXAMPLE)
+            @RequestParam(defaultValue = LIMIT_DEFAULT_VALUE, required = false)
+            @Min(value = 0, message = LIMIT_MIN_DESC)
+            final Integer limit,
+            @ApiParam(value = DET_PROB_THRESHOLD_DESC, example = NUMBER_VALUE_EXAMPLE)
+            @RequestParam(value = DET_PROB_THRESHOLD, required = false)
+            final Double detProbThreshold,
+            @ApiParam(value = FACE_PLUGINS_DESC)
+            @RequestParam(value = FACE_PLUGINS, required = false, defaultValue = "")
+            final String facePlugins,
+            @ApiParam(value = STATUS_DESC)
+            @RequestParam(value = STATUS, required = false, defaultValue = STATUS_DEFAULT_VALUE)
+            final Boolean status
+    ) {
+        var processableImages = new ProcessImageParams[targetImages.length];
+        var i = 0;
+        for (var file : targetImages) {
+            Map<String, Object> fileMap = Map.of(
+                    SOURCE_IMAGE, sourceImage,
+                    TARGET_IMAGE, file
+            );
+
+            ProcessImageParams processImageParams = ProcessImageParams
+                    .builder()
+                    .apiKey(apiKey)
+                    .file(fileMap)
+                    .limit(limit)
+                    .detProbThreshold(detProbThreshold)
+                    .facePlugins(facePlugins)
+                    .status(status)
+                    .build();
+
+            processableImages[i++] = processImageParams;
+        }
+
+        return (MultipleFacesDetectionResponseDto) verificationService.processImages(processableImages);
+    }
 
     @PostMapping(value = "/verification/verify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Map<String, List<VerifyFacesResponse>> verify(

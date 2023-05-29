@@ -1,17 +1,14 @@
 package com.exadel.frs.core.trainservice.service;
 
-import com.exadel.frs.commonservice.dto.FindFacesResultDto;
 import com.exadel.frs.commonservice.exception.BasicException;
 import com.exadel.frs.commonservice.sdk.faces.FacesApiClient;
 import com.exadel.frs.commonservice.sdk.faces.feign.dto.FindFacesResponse;
 import com.exadel.frs.core.trainservice.dto.FacesDetectionResponseDto;
-import com.exadel.frs.core.trainservice.dto.HashMapResponseDto;
+import com.exadel.frs.core.trainservice.dto.HashMapDetectionResponseDto;
 import com.exadel.frs.core.trainservice.dto.MultipleFacesDetectionResponseDto;
 import com.exadel.frs.core.trainservice.dto.ProcessImageParams;
 import com.exadel.frs.core.trainservice.mapper.FacesMapper;
 import com.exadel.frs.core.trainservice.validation.ImageExtensionValidator;
-import java.util.Collections;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +41,7 @@ public class FaceDetectionProcessServiceImpl implements FaceProcessService {
         return facesDetectionResponseDto.prepareResponse(processImageParams);
     }
 
-    public HashMapResponseDto processImages(final ProcessImageParams[] processImagesParams) {
+    public HashMapDetectionResponseDto processImages(final ProcessImageParams[] processImagesParams) {
         var responses = new MultipleFacesDetectionResponseDto[processImagesParams.length];
         int i = 0;
         for (ProcessImageParams processImageParams : processImagesParams) {

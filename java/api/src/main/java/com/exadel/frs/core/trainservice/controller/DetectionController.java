@@ -33,8 +33,7 @@ import static com.exadel.frs.core.trainservice.system.global.Constants.STATUS_DE
 import static com.exadel.frs.core.trainservice.system.global.Constants.X_FRS_API_KEY_HEADER;
 import com.exadel.frs.core.trainservice.dto.Base64File;
 import com.exadel.frs.core.trainservice.dto.FacesDetectionResponseDto;
-import com.exadel.frs.core.trainservice.dto.HashMapResponseDto;
-import com.exadel.frs.core.trainservice.dto.MultipleFacesDetectionResponseDto;
+import com.exadel.frs.core.trainservice.dto.HashMapDetectionResponseDto;
 import com.exadel.frs.core.trainservice.dto.ProcessImageParams;
 import com.exadel.frs.core.trainservice.service.FaceProcessService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -69,7 +68,7 @@ public class DetectionController {
                     value = "Api key of application and model",
                     required = true)
     })
-    public HashMapResponseDto detectMultiple(
+    public HashMapDetectionResponseDto detectMultiple(
             @ApiParam(value = MULTIPLE_IMAGE_FILE_DESC, required = true)
             @RequestParam
             final MultipartFile[] files,
@@ -102,7 +101,7 @@ public class DetectionController {
             processableImages[i++] = processImageParams;
         }
 
-        return (HashMapResponseDto) detectionService.processImages(processableImages);
+        return (HashMapDetectionResponseDto) detectionService.processImages(processableImages);
     }
 
     @PostMapping(value = "/detection/detect", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

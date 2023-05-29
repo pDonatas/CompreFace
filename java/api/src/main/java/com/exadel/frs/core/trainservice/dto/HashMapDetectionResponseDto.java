@@ -16,12 +16,11 @@
 package com.exadel.frs.core.trainservice.dto;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import com.exadel.frs.commonservice.dto.FindFacesResultDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -36,11 +35,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(NON_NULL)
-public class HashMapResponseDto extends FaceProcessResponse {
+public class HashMapDetectionResponseDto extends FaceProcessResponse {
     private List<HashMap<String, List<FindFacesResultDto>>> result;
 
     @Override
-    public HashMapResponseDto prepareResponse(ProcessImageParams processImageParams) {
+    public HashMapDetectionResponseDto prepareResponse(ProcessImageParams processImageParams) {
         return this;
     }
 
