@@ -5,11 +5,18 @@ import static com.exadel.frs.core.trainservice.service.FaceVerificationProcessSe
 import static com.exadel.frs.core.trainservice.system.global.Constants.*;
 
 import com.exadel.frs.core.trainservice.dto.*;
+import com.exadel.frs.core.trainservice.service.BatchHandleThread;
 import com.exadel.frs.core.trainservice.service.EmbeddingsProcessService;
+import com.exadel.frs.core.trainservice.service.ZipService;
 import io.swagger.annotations.ApiParam;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +38,23 @@ import org.springframework.web.multipart.MultipartFile;
 public class VerifyController {
 
     private final EmbeddingsProcessService verificationService;
+    private final ZipService zipService;
+
+    @PostMapping(value = "/verification/zip", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public HashMapVerifyResponseDto createSubject(
+            @ApiParam(value = API_KEY_DESC, required = true)
+            @RequestHeader(X_FRS_API_KEY_HEADER)
+            final String apiKey,
+            @ApiParam(value = ZIP_DESC, required = true)
+            @RequestParam(name = SOURCE_FILE)
+            final MultipartFile zipFile
+    ) {
+        new Thread(() -> {
+            zipService.handleZipFile(zipFile, apiKey);
+        }).start();
+
+        return new HashMapVerifyResponseDto();
+    }
 
     @PostMapping(value = "/verification/verify/multiple", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public HashMapVerifyResponseDto verifyMultiple(

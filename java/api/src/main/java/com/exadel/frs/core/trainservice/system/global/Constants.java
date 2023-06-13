@@ -29,6 +29,7 @@ public class Constants {
     public static final String CALCULATOR_PLUGIN = "calculator";
     public static final String RECOGNIZE = "/recognition/recognize";
     public static final String SOURCE_IMAGE = "source_image";
+    public static final String SOURCE_FILE = "file";
     public static final String TARGET_IMAGE = "target_image";
     public static final String TARGET_IMAGES = "target_images";
     public static final String FACE_PLUGINS = "face_plugins";
@@ -56,6 +57,7 @@ public class Constants {
     public static final String SUBJECT = "subject";
     public static final String IMAGE_ID = "image_id";
     public static final String SOURCE_IMAGE_DESC = "File to be verified";
+    public static final String ZIP_DESC = "Zip file with processable images";
     public static final String TARGET_IMAGE_DESC = "Reference file to check the processed file";
     public static final String STATUS = "status";
     public static final String DETECT_FACES = "detect_faces";

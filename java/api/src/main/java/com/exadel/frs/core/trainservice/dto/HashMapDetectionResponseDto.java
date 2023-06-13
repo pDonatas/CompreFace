@@ -28,6 +28,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder
@@ -48,5 +49,37 @@ public class HashMapDetectionResponseDto extends FaceProcessResponse {
             this.result = new ArrayList<>();
         }
         this.result.add(resultObject);
+    }
+
+    public List<String> getImagesWithLimitedFaces(final Integer limit) {
+        List<String> imagesWithLimitedFaces = new ArrayList<>();
+
+        for (HashMap<String, List<FindFacesResultDto>> resultObject : this.result) {
+            for (List<FindFacesResultDto> result : resultObject.values()) {
+                if (result == null) {
+                    continue;
+                }
+
+                if (result.size() == limit) {
+                    imagesWithLimitedFaces.add(resultObject.keySet().iterator().next());
+                }
+            }
+        }
+
+        return imagesWithLimitedFaces;
+    }
+
+    public List<String> getImagesWithNoFaces() {
+        List<String> imagesWithNoFaces = new ArrayList<>();
+
+        for (HashMap<String, List<FindFacesResultDto>> resultObject : this.result) {
+            for (List<FindFacesResultDto> result : resultObject.values()) {
+                if (result == null) {
+                    imagesWithNoFaces.add(resultObject.keySet().iterator().next());
+                }
+            }
+        }
+
+        return imagesWithNoFaces;
     }
 }

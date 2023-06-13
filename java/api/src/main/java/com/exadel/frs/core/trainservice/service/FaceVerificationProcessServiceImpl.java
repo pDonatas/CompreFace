@@ -50,7 +50,6 @@ public class FaceVerificationProcessServiceImpl implements FaceProcessService {
         for (ProcessImageParams processImageParams : processImagesParams) {
             MultipleFindFacesResponse response = MultipleFindFacesResponse.builder()
                     .build();
-            System.out.println("file: " + processImageParams.getFile());
             Map<String, MultipartFile> fileMap = (Map<String, MultipartFile>) processImageParams.getFile();
             MultipartFile sourceImage = fileMap.get(TARGET_IMAGE);
             response.setFileName(sourceImage.getOriginalFilename());
@@ -61,6 +60,13 @@ public class FaceVerificationProcessServiceImpl implements FaceProcessService {
             }
             responses[i] = response;
             i++;
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.out.println("Thread interrupted");
+            }
         }
 
         return MultipleFindFacesResponse.buildResponse(responses);

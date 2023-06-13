@@ -72,6 +72,8 @@ public class MultipleFindFacesResponse extends FaceProcessResponse {
             result.addResult(resultObject);
         }
 
+        System.out.println("Response generation complete");
+
         return result;
     }
 }

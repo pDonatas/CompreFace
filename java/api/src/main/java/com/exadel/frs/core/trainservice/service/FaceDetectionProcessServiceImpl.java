@@ -9,6 +9,8 @@ import com.exadel.frs.core.trainservice.dto.MultipleFacesDetectionResponseDto;
 import com.exadel.frs.core.trainservice.dto.ProcessImageParams;
 import com.exadel.frs.core.trainservice.mapper.FacesMapper;
 import com.exadel.frs.core.trainservice.validation.ImageExtensionValidator;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,5 +62,20 @@ public class FaceDetectionProcessServiceImpl implements FaceProcessService {
         }
 
         return MultipleFacesDetectionResponseDto.buildResponse(responses);
+    }
+
+    public List<String> getImagesWithLimitedFaces(HashMapDetectionResponseDto responses, Integer limit) {
+        return responses.getImagesWithLimitedFaces(limit);
+    }
+
+    public List<List<String>> getImagesWithLimitedAndNoFaces(final ProcessImageParams[] processImagesParams, Integer limit) {
+        List<List<String>> imagesWithLimitedAndNoFaces = new ArrayList<>();
+
+        HashMapDetectionResponseDto responses = processImages(processImagesParams);
+
+        imagesWithLimitedAndNoFaces.add(responses.getImagesWithLimitedFaces(limit));
+        imagesWithLimitedAndNoFaces.add(responses.getImagesWithNoFaces());
+
+        return imagesWithLimitedAndNoFaces;
     }
 }
